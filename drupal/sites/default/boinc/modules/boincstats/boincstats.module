@@ -234,7 +234,17 @@ function boincstats_get_project_stats_chart() {
     if ($stats_xml) {
       // Get the last 60 days of stats for the chart
       for ($j = 30; $j < 90; $j++) {
-        $dataset[] = (int) $stats_xml->records->record[$j];
+        $credits = (int) $stats_xml->records->record[$j];
+        $dataset[] = ($credits > 0 ? $credits : 0);
+      }
+      $avg_daily_credit = ($dataset) ? array_sum($dataset)/count($dataset) : 0;
+      foreach ($dataset as $j => $value) {
+        if ($value > $avg_daily_credit * 3) {
+          $dataset[$j] = $avg_daily_credit * 3;
+        }
+        elseif ($value < $avg_daily_credit / 3) {
+          $dataset[$j] = $avg_daily_credit / 3;
+        }
       }
     }
     else {
